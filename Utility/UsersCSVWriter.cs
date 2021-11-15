@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AccountManagers.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,13 +10,13 @@ namespace AccountManagers.Utility
 {
     public static class UsersCSVWriter
     {
-        public static void WriteToCSVFile(string id, string name, string email, string filePath)
+        public static void WriteToCSVFile(User user, string filePath)
         {
             try
             {
                 using (StreamWriter sw = new StreamWriter(@filePath, true))
                 {
-                    sw.WriteLine($"{id},{name},{email}");
+                    sw.WriteLine($"{user.Id},{user.Name},{user.Email}");
                 }
             }
             catch (Exception ex)

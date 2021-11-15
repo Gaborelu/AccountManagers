@@ -1,4 +1,6 @@
 ﻿using AccountManagers.Data;
+using AccountManagers.Models;
+using AccountManagers.Utility;
 using System;
 using System.Configuration;
 
@@ -6,11 +8,14 @@ namespace AccountManagers
 {
     class Program
     {
-        public static string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
-
         static void Main(string[] args)
         {
 
+            LoadApplication();
+        }
+
+        public static void LoadApplication()
+        {
             Console.WriteLine("Please choose an operation:");
             Console.WriteLine("1. Display all users from database.");
             Console.WriteLine("2. Add an user to database.");
@@ -18,23 +23,33 @@ namespace AccountManagers
             Console.WriteLine("4. Quit the application");
             var option = Console.ReadLine();
 
-            switch (option)
+            while (option.Equals("4") == false)
             {
-                case "1":
-                    UserRepository.DisplayUsers(connectionString);
-                    break;
-                case "2":
-                    AddUser();
-                    break;
-                case "3":
-                    RemoveUser();
-                    break;
-                case "4":
-                    break;
-                default:
-                    Console.WriteLine("Option was not recognized.");
-                    break;
-
+                switch (option)
+                {
+                    case "1":
+                        UserRepository.GetAllUsers();
+                        Console.WriteLine("Please choose an operation:");
+                        option = Console.ReadLine();
+                        break;
+                    case "2":
+                        AddUser();
+                        Console.WriteLine("Please choose an operation:");
+                        option = Console.ReadLine();
+                        break;
+                    case "3":
+                        RemoveUser();
+                        Console.WriteLine("Please choose an operation:");
+                        option = Console.ReadLine();
+                        break;
+                    case "4":                       
+                        break;
+                    default:
+                        Console.WriteLine("Option was not recognized.");
+                        Console.WriteLine("Please choose an operation:");
+                        option = Console.ReadLine();
+                        break;
+                }
             }
         }
 
@@ -44,7 +59,22 @@ namespace AccountManagers
             var name = Console.ReadLine();
             Console.WriteLine("Enter an email:");
             var email = Console.ReadLine();
-            UserRepository.InsertUser(connectionString, name, email);
+
+            while (email != null)
+            {
+                if (EmailValidator.IsEmailValid(email) == true)
+                {
+                    User user = new User(name, email);
+                    UserRepository.InsertUser(user);
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a valid email.");
+                    email = Console.ReadLine();
+                }
+                break;
+            }
         }
 
         public static void RemoveUser()
@@ -52,7 +82,9 @@ namespace AccountManagers
             Console.WriteLine("Enter the Id of the user:");
             var number = Console.ReadLine();
             bool success = int.TryParse(number, out int id);
-            UserRepository.DeleteUser(connectionString, id);
+            UserRepository.DeleteUser(id);
         }
+
+
     }
 }
