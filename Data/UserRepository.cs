@@ -14,32 +14,11 @@ namespace AccountManagers.Data
     {
         private static string connectionString = ConfigurationManager.ConnectionStrings["DbConn"].ConnectionString;
 
-        //public static void InsertUser(User user)
-        //{
-        //    string sqlCommand = "INSERT INTO CatalinUsers(name, email) VALUES(@Name, @Email)";
-            
-        //    using (SqlConnection conn = new SqlConnection(connectionString))
-        //    {
-        //        conn.Open();
-        //        Console.WriteLine("Connection open...");
-
-        //        SqlCommand cmd = new SqlCommand(sqlCommand, conn);
-        //        cmd.Parameters.AddWithValue("@Name", user.Name);
-        //        cmd.Parameters.AddWithValue("@Email", user.Email);
-
-        //        cmd.ExecuteNonQuery();
-        //        Console.WriteLine("User inserted succesfuly.");
-
-        //    }
-
-        //}
-
         public static void InsertUser(User user)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                Console.WriteLine("Connection open...");
 
                 SqlCommand cmd = new SqlCommand("UserInsert", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -62,31 +41,12 @@ namespace AccountManagers.Data
             }
 
         }
-
-        //public static void DeleteUser(int id)
-        //{
-        //    string sqlCommand = "DELETE FROM CatalinUsers WHERE Id = @Id";
-
-        //    using (SqlConnection conn = new SqlConnection(connectionString))
-        //    {
-        //        conn.Open();
-        //        Console.WriteLine("Connection open...");
-
-        //        SqlCommand cmd = new SqlCommand(sqlCommand, conn);
-        //        cmd.Parameters.AddWithValue("@Id", id);
-
-        //        cmd.ExecuteNonQuery();
-        //        Console.WriteLine("User deleted.");
-
-        //    }
-        //}
-
+       
         public static void DeleteUser(int id)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                Console.WriteLine("Connection open...");
 
                 SqlCommand cmd = new SqlCommand("UserDelete", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -94,42 +54,13 @@ namespace AccountManagers.Data
                 cmd.Parameters.Add("@Id", SqlDbType.Int);
                 cmd.Parameters["@Id"].Value = id;
              
-                cmd.ExecuteNonQuery();
-               
-                Console.WriteLine("User deleted.");
+                cmd.ExecuteNonQuery();                 
 
             }
 
-        }
+        }       
 
-        //public static void DisplayUsers()
-        //{
-        //    User user = new User();
-
-        //    string sqlCommand = "SELECT Id,Name,Email FROM CatalinUsers";
-
-        //    using (SqlConnection conn = new SqlConnection(connectionString))
-        //    {
-        //        conn.Open();
-        //        using (SqlCommand cmd = new SqlCommand(sqlCommand, conn))
-        //        {
-        //            SqlDataReader dr = cmd.ExecuteReader();
-
-        //            while (dr.Read())
-        //            {
-        //                string id = dr["Id"].ToString();
-        //                string name = dr["Name"].ToString();
-        //                string email = dr["Email"].ToString();
-
-        //                Console.WriteLine($"User with id: {id}, name: {name} and email: {email}");
-        //            }
-        //            dr.Close();
-        //        }
-        //    }
-
-        //}
-
-        public static void GetAllUsers()
+        public static IList<User> GetAllUsers()
         {
             List<User> users = new List<User>();
 
@@ -148,11 +79,18 @@ namespace AccountManagers.Data
                         string name = dr["Name"].ToString();
                         string email = dr["Email"].ToString();
 
-                        Console.WriteLine($"User with id: {id}, name: {name} and email: {email}");
+                        var user = new User();
+                        user.Id = int.Parse(id);
+                        user.Name = name;
+                        user.Email = email;
+                        users.Add(user);
+                       
                     }
                     dr.Close();
                 }
             }
+
+            return users;
         }
 
         
