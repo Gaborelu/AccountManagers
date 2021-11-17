@@ -2,7 +2,9 @@
 using AccountManagers.Models;
 using AccountManagers.Utility;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using static AccountManagers.Data.Constants;
 
 namespace AccountManagers
 {
@@ -17,9 +19,14 @@ namespace AccountManagers
                 option = ChooseOption();
                 HandleOption(option);
 
-            } while (option.Equals("5") == false);
-            
-         
+            } while (ShouldContiue(option));
+
+
+        }
+
+        private static bool ShouldContiue(string option)
+        {
+            return option.Equals("5") == false;
         }
 
         public static void PrintOptions()
@@ -46,7 +53,8 @@ namespace AccountManagers
                     switch (option)
                     {
                         case "1":
-                            GetUsers();
+                            var users = GetUsers();
+                            PrintUsers(users);
                             break;
                         case "2":
                             AddUser();
@@ -71,9 +79,13 @@ namespace AccountManagers
             }
         }
 
-        private static void GetUsers()
+        private static IList<User> GetUsers()
         {
-            var users = UserRepository.GetAllUsers();
+            return UserRepository.GetAllUsers();
+        }
+
+        private static void PrintUsers(IList<User> users)
+        {
             foreach (var user in users)
             {
                 Console.WriteLine($"User id={user.Id} with name={user.Name} and email={user.Email}");
@@ -82,14 +94,16 @@ namespace AccountManagers
 
         public static void AddUser()
         {
-            Console.WriteLine("Enter a name:");
+            Console.WriteLine(AskForNameMessage);
             var name = Console.ReadLine();
-            Console.WriteLine("Enter an email:");
+            Console.WriteLine(AskForEmailMessage);
             var email = Console.ReadLine();
+
+            IEmailValidator validator = new EmailValidator();
 
             while (email != null)
             {
-                if (EmailValidator.IsEmailValid(email) == true)
+                if (validator.IsEmailValid(email))
                 {
                     User user = new User(name, email);
                     UserRepository.InsertUser(user);
@@ -99,14 +113,13 @@ namespace AccountManagers
                 {
                     Console.WriteLine("Please enter a valid email.");
                     email = Console.ReadLine();
-                }
-                break;
+                }                
             }
         }
 
         public static void RemoveUser()
         {
-            Console.WriteLine("Enter the Id of the user:");
+            Console.WriteLine(AskForIdMessage);
             var number = Console.ReadLine();
             bool success = int.TryParse(number, out int id);
             UserRepository.DeleteUser(id);

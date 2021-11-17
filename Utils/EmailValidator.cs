@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AccountManagers.Utility
 {
-    public static class EmailValidator
+    public class EmailValidator:IEmailValidator
     {
-        public static bool IsEmailValid(string email)
+        public bool IsEmailValid(string email)
         {
             if (email.Contains("@") && email.Contains("."))
             {
@@ -17,4 +17,5 @@ namespace AccountManagers.Utility
             return false;
         }
     }
+
 }
